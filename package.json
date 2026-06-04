@@ -1,0 +1,56 @@
+{
+  "name": "@adrive/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for AgentDrive — cross-agent artifact workspace with provenance and portable storage across Claude Code, Codex, Cursor, and LangGraph.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "adrive-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./registry": "./dist/registry.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "homepage": "https://agentdrive.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rakesh1002/agentdrive-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rakesh1002/agentdrive-mcp/issues"
+  },
+  "keywords": [
+    "agentdrive",
+    "mcp",
+    "model-context-protocol",
+    "agent",
+    "ai-agent",
+    "claude-code",
+    "codex",
+    "cursor",
+    "langgraph"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
