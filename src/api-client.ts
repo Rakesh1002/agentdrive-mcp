@@ -3,6 +3,9 @@ export interface ApiClientConfig {
   apiKey: string;
   agentPlatform?: string;
   agentRole?: string;
+  // Project key for the caller's working directory (see project.ts); the
+  // hosted server has no cwd and leaves it unset.
+  project?: string;
   // Override the fetch implementation. The hosted MCP server (in-worker) passes
   // a self service-binding fetch here so its REST calls dispatch in-process
   // instead of looping back through the edge (which 522s). Defaults to global fetch.
@@ -79,10 +82,35 @@ export interface RunRequestBody {
   metadata?: Record<string, unknown>;
 }
 
+export interface AgentRunRecord {
+  run_id: string;
+  org_id: string;
+  workspace_id?: string;
+  agent_id: string;
+  agent_platform: string;
+  agent_role?: string;
+  task: string;
+  artifacts_referenced: string[];
+  artifacts_produced: string[];
+  duration_ms?: number;
+  status: RunStatus;
+  metadata: Record<string, unknown>;
+  created_at: number;
+  updated_at?: number;
+}
+
+export interface ListRunsQuery {
+  project: string;
+  platform?: string;
+  limit?: number;
+  cursor?: string;
+}
+
 export class ApiClient {
+  readonly project?: string;
+  readonly agentPlatform: string;
   private baseUrl: string;
   private apiKey: string;
-  private agentPlatform: string;
   private agentRole: string;
   private fetchImpl: (input: string, init?: RequestInit) => Promise<Response>;
 
@@ -91,6 +119,7 @@ export class ApiClient {
     this.apiKey = config.apiKey;
     this.agentPlatform = config.agentPlatform ?? 'claude-code';
     this.agentRole = config.agentRole ?? '';
+    this.project = config.project;
     this.fetchImpl = config.fetchImpl ?? ((input, init) => fetch(input, init));
   }
 
@@ -151,6 +180,13 @@ export class ApiClient {
       id: string; path: string; content: string;
       version: number; updated_at: string;
     }>('GET', `/workspaces/${workspaceId}/files/${fileId}?content=true`);
+  }
+
+  async readFileByPath(workspaceId: string, path: string) {
+    const page = await this.listFilesPage(workspaceId, path, null);
+    const match = page.items.find((f) => f.path === path);
+    if (!match) throw new Error(`File not found: ${path}`);
+    return this.readFile(workspaceId, match.id);
   }
 
   async listFilesPage(workspaceId: string, prefix: string | undefined, cursor: string | null) {
@@ -351,6 +387,18 @@ export class ApiClient {
 
   async logRun(body: RunRequestBody): Promise<{ run_id: string; created_at: number }> {
     return this.request<{ run_id: string; created_at: number }>('POST', '/runs', body);
+  }
+
+  async listRuns(query: ListRunsQuery): Promise<PagedResponse<AgentRunRecord>> {
+    const params = new URLSearchParams({ project: query.project });
+    if (query.platform) params.set('platform', query.platform);
+    if (query.limit) params.set('limit', String(query.limit));
+    if (query.cursor) params.set('cursor', query.cursor);
+    return this.requestPage<AgentRunRecord>('GET', `/runs?${params.toString()}`);
+  }
+
+  async getRun(runId: string): Promise<AgentRunRecord> {
+    return this.request<AgentRunRecord>('GET', `/runs/${encodeURIComponent(runId)}`);
   }
 
   // --- Sandbox (Wave 5 Stream D) ---

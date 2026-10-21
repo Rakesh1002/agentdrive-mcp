@@ -10,6 +10,8 @@ const AGENT_PLATFORMS = [
   'autogen',
   'hermes',
   'openclaw',
+  'opencode',
+  'gemini-cli',
   'unknown',
 ] as const;
 

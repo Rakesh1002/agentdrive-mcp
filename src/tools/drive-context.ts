@@ -42,7 +42,7 @@ function truncate(s: string, n: number): string {
   return s.slice(0, n - 1) + '...';
 }
 
-function relativeTime(ms: number): string {
+export function relativeTime(ms: number): string {
   if (ms < 0) return 'just now';
   const sec = Math.floor(ms / 1000);
   if (sec < 60) return `${sec}s ago`;

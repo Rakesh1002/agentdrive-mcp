@@ -65,7 +65,7 @@ Add that block to your host's MCP config:
 
 - **Claude Desktop:** `claude_desktop_config.json`
 - **Cursor:** `~/.cursor/mcp.json`
-- **Claude Code:** `claude mcp add agentdrive -- npx -y @adrive/mcp-server` (set `AGENTDRIVE_API_KEY` in env)
+- **Claude Code:** install the plugin (see above), which also captures sessions
 - **Codex / Cline / Continue / Zed:** the standard `mcpServers` block above
 
 The fastest path is the AgentDrive installer, which auto-wires every detected host:
@@ -78,20 +78,22 @@ curl -fsSL agentdrive.sh/install | sh
 
 | Env var | Required | Default | Description |
 |---|---|---|---|
-| `AGENTDRIVE_API_KEY` | yes | — | Your AgentDrive API key (`agentdrive_live_...`). |
+| `AGENTDRIVE_API_KEY` | no | key saved by `adrive auth login` | Your AgentDrive API key (`agentdrive_live_...`). Falls back to `~/.config/agentdrive/config.json`, so client configs never need the key inline. |
 | `AGENTDRIVE_API_URL` | no | `https://app.agentdrive.sh` | Override the API endpoint (self-hosted worker). |
-| `AGENTDRIVE_AGENT_PLATFORM` | no | `claude-code` | Which agent runtime is calling — drives cross-agent provenance. One of `claude-code`, `codex`, `cursor`, `langgraph`, `crewai`, `autogen`, `cline`, `continue`, `zed`, `unknown`. |
+| `AGENTDRIVE_AGENT_PLATFORM` | no | `unknown` | Which agent runtime is calling — drives cross-agent provenance. One of `claude-code`, `codex`, `opencode`, `gemini-cli`, `cursor`, `langgraph`, `crewai`, `autogen`, `hermes`, `openclaw`, `unknown`. |
 | `AGENTDRIVE_AGENT_ROLE` | no | — | Free-text role label (e.g. `planner`, `reviewer`) to distinguish multiple agents on the same platform. |
 
 ## Tools
 
-20 tools across files, memory, collaboration, org, and provenance.
+22 tools across files, memory, sessions, collaboration, org, and provenance. The stdio server derives the current project from its working directory (git remote, else repo path), which scopes `drive_sessions` and `drive_resume`.
 
 | Tool | Category | Description |
 |---|---|---|
 | `drive_context` | memory | Auto-pull the most relevant prior artifacts for the task you're starting. |
 | `drive_search` | memory | Semantic search across your org's artifacts. |
 | `drive_recall` | memory | Recall persistent facts/preferences agents have written. |
+| `drive_sessions` | sessions | List recent agent sessions for this project across Claude Code, Codex, OpenCode, Gemini CLI, and Cursor. |
+| `drive_resume` | sessions | Load a compact handoff (goal, files touched, recent turns) from a prior session, by default the latest from a different harness. |
 | `drive_write` | files | Write a markdown file (auto-versioned). |
 | `drive_read` | files | Read a file's content. |
 | `drive_list` | files | List files in a workspace. |

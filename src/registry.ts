@@ -21,6 +21,8 @@ import { driveSandboxCloneSchema, driveSandboxClone } from './tools/drive-sandbo
 import { driveSandboxExecSchema, driveSandboxExec } from './tools/drive-sandbox-exec.js';
 import { driveSandboxReadSchema, driveSandboxRead } from './tools/drive-sandbox-read.js';
 import { driveSandboxCommitSchema, driveSandboxCommit } from './tools/drive-sandbox-commit.js';
+import { driveSessionsSchema, driveSessions } from './tools/drive-sessions.js';
+import { driveResumeSchema, driveResume } from './tools/drive-resume.js';
 
 export interface ToolResult {
   // Index signature mirrors the MCP SDK's CallToolResult so a registry entry's
@@ -49,6 +51,10 @@ Reach for these tools without waiting to be asked:
   current task. Returns the most relevant artifacts and last_run
   summaries from prior agents' work in the same workspace, each with
   an \`attribution\` block explaining *why* it was surfaced.
+- **Continuing earlier work:** if the user is picking up where a prior
+  session left off (or a SessionStart note mentions prior sessions),
+  call \`drive_sessions\` to list this project's recent sessions across
+  harnesses, then \`drive_resume\` to load one's handoff brief.
 - **Cross-agent recall:** call \`drive_search\` (semantic) when the
   user asks "what did Codex / Cursor / the last session do?"
 - **Saving work:** call \`drive_write\` for any artifact worth keeping
@@ -59,7 +65,7 @@ Reach for these tools without waiting to be asked:
 Privacy: if the user has Private Workspace on, written content is
 encrypted client-side; the AgentDrive server only stores ciphertext.`;
 
-// Single source of truth for the 20 tools. Consumed by the stdio server
+// Single source of truth for the 22 tools. Consumed by the stdio server
 // (packages/mcp-server/src/index.ts) and the hosted Streamable-HTTP endpoint
 // (apps/worker/src/routes/mcp.ts).
 export const TOOLS: ToolDef[] = [
@@ -79,6 +85,8 @@ export const TOOLS: ToolDef[] = [
   { name: 'drive_recall', description: 'Recall persistent facts and preferences your agents have written. In v1 this returns semantic search results across artifacts; v1.5 will narrow to auto-extracted facts (preferences, decisions, key entities).', schema: driveRecallSchema, handler: driveRecall },
   { name: 'drive_log_run', description: "Log an agent run to AgentDrive's provenance store. Captures task, status, referenced/produced artifacts, and cross-platform identity (which agent on which tool). Used for retrospective context retrieval and team-wide audit.", schema: driveLogRunSchema, handler: driveLogRun },
   { name: 'drive_context', description: 'Auto-pull the most relevant artifacts from prior agent sessions for the task you are about to do. Combines semantic relevance with recency. Call this at the START of any non-trivial task to ground the agent in prior context — replaces manual copy-paste of artifacts between sessions.', schema: driveContextSchema, handler: driveContext },
+  { name: 'drive_sessions', description: 'List recent agent sessions for this project across harnesses (Claude Code, Codex, OpenCode, Gemini CLI, Cursor), newest first. Use to find prior work to continue.', schema: driveSessionsSchema, handler: driveSessions },
+  { name: 'drive_resume', description: "Load a compact handoff brief (goal, files touched, recent turns) from a prior session, by default the latest one from a different harness, so you can continue that work.", schema: driveResumeSchema, handler: driveResume },
   { name: 'drive_sandbox_clone', description: '[EXPERIMENTAL] Clone a git repo into a per-workspace Linux sandbox. Requires Cloudflare Containers on the AgentDrive worker; gracefully degrades to a 503 with "sandbox not configured" otherwise.', schema: driveSandboxCloneSchema, handler: driveSandboxClone },
   { name: 'drive_sandbox_exec', description: '[EXPERIMENTAL] Run a shell command inside the per-workspace Linux sandbox. Captures stdout/stderr (64 KB cap), exit code, duration. Requires Cloudflare Containers; degrades to 503 otherwise.', schema: driveSandboxExecSchema, handler: driveSandboxExec },
   { name: 'drive_sandbox_read', description: '[EXPERIMENTAL] Read a file from the per-workspace sandbox filesystem (build artifacts, test output, logs). Requires Cloudflare Containers; degrades to 503 otherwise.', schema: driveSandboxReadSchema, handler: driveSandboxRead },
