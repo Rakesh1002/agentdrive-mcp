@@ -49,6 +49,17 @@ describe('renderSession + buildHandoff', () => {
     expect(handoff).toContain('## Goal\n\nturn-0');
   });
 
+  it('lists uploaded file ids with their workspace inside the budget', () => {
+    const turns = Array.from({ length: 40 }, (_, i) => ({ role: i % 2 === 0 ? 'user' : 'assistant', text: `turn-${i} ${'x'.repeat(300)}` }));
+    const handoff = buildHandoff(renderSession(doc({ turns })), 3000, { workspaceId: 'ws_9', fileIds: ['file_a', 'file_b'] });
+    expect(handoff.length).toBeLessThanOrEqual(3000);
+    expect(handoff).toMatch(/## Uploaded files\n\n.*workspace ws_9.*drive_read/);
+    expect(handoff).toContain('- file_a\n- file_b');
+    expect(handoff.indexOf('## Uploaded files')).toBeLessThan(handoff.indexOf('## Recent turns'));
+    expect(handoff).toContain('turn-39');
+    expect(buildHandoff(renderSession(doc()), undefined, { workspaceId: 'ws_9', fileIds: [] })).not.toContain('Uploaded files');
+  });
+
   it('keeps the tail of a single oversized last turn', () => {
     const big = `start ${'y'.repeat(20000)} the-end`;
     const handoff = buildHandoff(renderSession(doc({ turns: [{ role: 'user', text: 'goal' }, { role: 'assistant', text: big }] })), 4000);

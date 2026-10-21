@@ -152,7 +152,12 @@ function truncate(s: string, n: number): string {
   return s.length <= n ? s : `${s.slice(0, n - 3)}...`;
 }
 
-export function buildHandoff(markdown: string, maxChars: number = DEFAULT_HANDOFF_CHARS): string {
+export interface HandoffUploads {
+  workspaceId: string;
+  fileIds: string[];
+}
+
+export function buildHandoff(markdown: string, maxChars: number = DEFAULT_HANDOFF_CHARS, uploads?: HandoffUploads): string {
   const session = parseSession(markdown);
   const from = session.harness ?? 'prior';
   const intro = `Handoff from a ${from} session${session.sessionId ? ` (${session.sessionId})` : ''}. Continue this work; verify file state on disk before assuming it.`;
@@ -169,6 +174,15 @@ export function buildHandoff(markdown: string, maxChars: number = DEFAULT_HANDOF
     const more = session.files.length - shown.length;
     if (more > 0) shown.push(`- (+${more} more)`);
     sections.push(`## Files touched\n\n${shown.join('\n')}`);
+  }
+
+  if (uploads && uploads.fileIds.length > 0) {
+    const shown = uploads.fileIds.slice(0, MAX_HANDOFF_FILES).map((id) => `- ${id}`);
+    const more = uploads.fileIds.length - shown.length;
+    if (more > 0) shown.push(`- (+${more} more)`);
+    sections.push(
+      `## Uploaded files\n\nCopies of files this session wrote, in workspace ${uploads.workspaceId}. If they are not on disk here, read each with drive_read (workspace_id ${uploads.workspaceId}, file_id below):\n\n${shown.join('\n')}`,
+    );
   }
 
   if (session.turns.length === 0) {

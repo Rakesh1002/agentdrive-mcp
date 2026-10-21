@@ -100,6 +100,7 @@ describe('drive_resume', () => {
     expect(res.content[0].text).toContain('Handoff from a codex session (s1).');
     expect(res.content[0].text).toContain('Fix the login bug');
     expect(res.content[0].text).toContain('Patched src/auth.ts');
+    expect(res.content[0].text).toMatch(/## Uploaded files\n\n.*workspace ws_1[\s\S]*- a\.md/);
   });
 
   it('falls back to the newest session when all are from the caller platform', async () => {

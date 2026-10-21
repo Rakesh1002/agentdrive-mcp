@@ -41,5 +41,5 @@ export async function driveResume(client: ApiClient, args: {
   if (isEncrypted(file.content)) {
     return text(`This session is encrypted client-side; run \`adrive resume ${run.run_id}\` in a shell to view it.`);
   }
-  return text(buildHandoff(file.content, args.max_chars));
+  return text(buildHandoff(file.content, args.max_chars, { workspaceId: run.workspace_id, fileIds: run.artifacts_produced }));
 }
