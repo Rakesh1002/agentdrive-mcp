@@ -1,0 +1,52 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v adrive >/dev/null 2>&1 && adrive hook claude-code || npx -y @adrive/cli hook claude-code",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v adrive >/dev/null 2>&1 && adrive hook claude-code || npx -y @adrive/cli hook claude-code",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v adrive >/dev/null 2>&1 && adrive hook claude-code || npx -y @adrive/cli hook claude-code",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v adrive >/dev/null 2>&1 && adrive hook claude-code || npx -y @adrive/cli hook claude-code",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}

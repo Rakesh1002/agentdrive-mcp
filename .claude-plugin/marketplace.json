@@ -1,0 +1,17 @@
+{
+  "name": "agentdrive",
+  "owner": {
+    "name": "Rakesh Roushan",
+    "url": "https://github.com/Rakesh1002"
+  },
+  "metadata": {
+    "description": "AgentDrive: cross-agent session capture and resume."
+  },
+  "plugins": [
+    {
+      "name": "agentdrive",
+      "source": "./plugins/agentdrive",
+      "description": "Capture every agent session in the background and resume it from any harness: Claude Code, Codex, OpenCode, Gemini CLI, or Cursor."
+    }
+  ]
+}

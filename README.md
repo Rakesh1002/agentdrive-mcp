@@ -14,6 +14,18 @@ attribution — so the next session (on any tool) picks up where the last one le
 - **npm:** [`@adrive/mcp-server`](https://www.npmjs.com/package/@adrive/mcp-server)
 - **Hosted endpoint:** `https://mcp.agentdrive.sh/mcp`
 
+## Claude Code plugin
+
+This repo is also the Claude Code plugin marketplace. The plugin captures every
+session in the background and resumes it from Codex, OpenCode, Gemini CLI, or Cursor:
+
+```
+/plugin install agentdrive --marketplace Rakesh1002/agentdrive-mcp
+```
+
+On Claude Code older than 2.1.275, run `/plugin marketplace add Rakesh1002/agentdrive-mcp`
+then `/plugin install agentdrive@agentdrive`. Sign in with `/agentdrive:login`.
+
 ## Get an API key (free)
 
 Create one at **https://app.agentdrive.sh** — no credit card. The free tier
