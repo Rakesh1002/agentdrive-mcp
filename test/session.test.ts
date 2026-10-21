@@ -60,6 +60,17 @@ describe('renderSession + buildHandoff', () => {
     expect(buildHandoff(renderSession(doc()), undefined, { workspaceId: 'ws_9', fileIds: [] })).not.toContain('Uploaded files');
   });
 
+  it('shrinks long file lists so a small budget still carries recent turns and whole ids', () => {
+    const filesTouched = Array.from({ length: 30 }, (_, i) => `src/features/module-${i}/components/deeply/nested/file-${i}.tsx`);
+    const fileIds = Array.from({ length: 30 }, (_, i) => `file_${String(i).padStart(12, '0')}`);
+    const goal = { role: 'user', text: `Goal: ${'g'.repeat(2000)}` };
+    const handoff = buildHandoff(renderSession(doc({ filesTouched, turns: [goal, { role: 'assistant', text: 'latest answer' }] })), 1000, { workspaceId: 'ws_9', fileIds });
+    expect(handoff.length).toBeLessThanOrEqual(1000);
+    expect(handoff).toContain('latest answer');
+    expect(handoff).toMatch(/- \(\+\d+ more\)/);
+    for (const line of handoff.split('\n').filter((l) => l.startsWith('- file_'))) expect(line).toMatch(/^- file_\d{12}$/);
+  });
+
   it('keeps the tail of a single oversized last turn', () => {
     const big = `start ${'y'.repeat(20000)} the-end`;
     const handoff = buildHandoff(renderSession(doc({ turns: [{ role: 'user', text: 'goal' }, { role: 'assistant', text: big }] })), 4000);

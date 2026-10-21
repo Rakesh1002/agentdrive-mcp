@@ -157,41 +157,49 @@ export interface HandoffUploads {
   fileIds: string[];
 }
 
+function listSection(heading: string, lead: string, items: string[], cap: number): string {
+  const shown = items.slice(0, cap).map((item) => `- ${item}`);
+  if (items.length > cap) shown.push(`- (+${items.length - cap} more)`);
+  return `## ${heading}\n\n${lead}${shown.join('\n')}`;
+}
+
 export function buildHandoff(markdown: string, maxChars: number = DEFAULT_HANDOFF_CHARS, uploads?: HandoffUploads): string {
   const session = parseSession(markdown);
   const from = session.harness ?? 'prior';
   const intro = `Handoff from a ${from} session${session.sessionId ? ` (${session.sessionId})` : ''}. Continue this work; verify file state on disk before assuming it.`;
 
-  const sections: string[] = [intro];
-  if (session.meta.length > 0) sections.push(session.meta.join('\n'));
-
   const firstUser = session.turns.find((t) => t.role === 'user');
   const goal = firstUser ? turnBody(firstUser) : '';
-  if (goal) sections.push(`## Goal\n\n${truncate(goal, GOAL_CHARS)}`);
-
-  if (session.files.length > 0) {
-    const shown = session.files.slice(0, MAX_HANDOFF_FILES).map((f) => `- ${f}`);
-    const more = session.files.length - shown.length;
-    if (more > 0) shown.push(`- (+${more} more)`);
-    sections.push(`## Files touched\n\n${shown.join('\n')}`);
-  }
-
-  if (uploads && uploads.fileIds.length > 0) {
-    const shown = uploads.fileIds.slice(0, MAX_HANDOFF_FILES).map((id) => `- ${id}`);
-    const more = uploads.fileIds.length - shown.length;
-    if (more > 0) shown.push(`- (+${more} more)`);
-    sections.push(
-      `## Uploaded files\n\nCopies of files this session wrote, in workspace ${uploads.workspaceId}. If they are not on disk here, read each with drive_read (workspace_id ${uploads.workspaceId}, file_id below):\n\n${shown.join('\n')}`,
-    );
-  }
+  const goalChars = Math.min(GOAL_CHARS, Math.floor(maxChars / 8));
+  const head = (cap: number): string => {
+    const sections: string[] = [intro];
+    if (session.meta.length > 0) sections.push(session.meta.join('\n'));
+    if (goal) sections.push(`## Goal\n\n${truncate(goal, goalChars)}`);
+    if (session.files.length > 0) sections.push(listSection('Files touched', '', session.files, cap));
+    if (uploads && uploads.fileIds.length > 0) {
+      sections.push(
+        listSection(
+          'Uploaded files',
+          `Copies of files this session wrote, in workspace ${uploads.workspaceId}. If they are not on disk here, read each with drive_read (workspace_id ${uploads.workspaceId}, file_id below):\n\n`,
+          uploads.fileIds,
+          cap,
+        ),
+      );
+    }
+    return sections.join('\n\n');
+  };
+  // The lists give way first, so a small budget still carries the recent turns.
+  let cap = MAX_HANDOFF_FILES;
+  let fixedHead = head(cap);
+  while (cap > 0 && fixedHead.length > maxChars / 2) fixedHead = head(--cap);
 
   if (session.turns.length === 0) {
-    const fixed = `${sections.join('\n\n')}\n\n## Transcript (tail)\n\n`;
+    const fixed = `${fixedHead}\n\n## Transcript (tail)\n\n`;
     const body = markdown.trim();
     return (fixed + body.slice(Math.max(0, body.length - (maxChars - fixed.length)))).slice(0, maxChars);
   }
 
-  const fixed = `${sections.join('\n\n')}\n\n## Recent turns\n\n`;
+  const fixed = `${fixedHead}\n\n## Recent turns\n\n`;
   const markerReserve = 64;
   let remaining = maxChars - fixed.length - markerReserve;
   const picked: string[] = [];
