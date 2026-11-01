@@ -78,7 +78,7 @@ curl -fsSL agentdrive.sh/install | sh
 
 | Env var | Required | Default | Description |
 |---|---|---|---|
-| `AGENTDRIVE_API_KEY` | no | key saved by `adrive auth login` | Your AgentDrive API key (`agentdrive_live_...`). Falls back to `~/.config/agentdrive/config.json`, so client configs never need the key inline. |
+| `AGENTDRIVE_API_KEY` | no | key saved by `adrive auth login` | Your AgentDrive API key (`agentdrive_live_...`). Falls back to `~/.config/agentdrive/config.json`, so client configs never need the key inline. With no key at all the server still starts and offers one tool, `drive_connect`, which signs the user in through the browser and connects their other agent tools; the full toolset then appears in the same session. |
 | `AGENTDRIVE_API_URL` | no | `https://app.agentdrive.sh` | Override the API endpoint (self-hosted worker). |
 | `AGENTDRIVE_AGENT_PLATFORM` | no | `unknown` | Which agent runtime is calling — drives cross-agent provenance. One of `claude-code`, `codex`, `opencode`, `gemini-cli`, `cursor`, `langgraph`, `crewai`, `autogen`, `hermes`, `openclaw`, `unknown`. |
 | `AGENTDRIVE_AGENT_ROLE` | no | — | Free-text role label (e.g. `planner`, `reviewer`) to distinguish multiple agents on the same platform. |
