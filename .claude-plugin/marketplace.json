@@ -11,7 +11,7 @@
     {
       "name": "agentdrive",
       "source": "./plugins/agentdrive",
-      "description": "Capture every agent session in the background and resume it from any harness: Claude Code, Codex, OpenCode, Gemini CLI, or Cursor."
+      "description": "Capture every agent session in the background and resume it from any harness: Claude Code, Codex, OpenCode, Gemini CLI, Cursor, or Antigravity."
     }
   ]
 }

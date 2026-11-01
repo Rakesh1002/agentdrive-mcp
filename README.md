@@ -17,7 +17,7 @@ attribution — so the next session (on any tool) picks up where the last one le
 ## Claude Code plugin
 
 This repo is also the Claude Code plugin marketplace. The plugin captures every
-session in the background and resumes it from Codex, OpenCode, Gemini CLI, or Cursor:
+session in the background and resumes it from Codex, OpenCode, Gemini CLI, Antigravity, or Cursor:
 
 ```
 /plugin install agentdrive --marketplace Rakesh1002/agentdrive-mcp
@@ -80,7 +80,7 @@ curl -fsSL agentdrive.sh/install | sh
 |---|---|---|---|
 | `AGENTDRIVE_API_KEY` | no | key saved by `adrive auth login` | Your AgentDrive API key (`agentdrive_live_...`). Falls back to `~/.config/agentdrive/config.json`, so client configs never need the key inline. With no key at all the server still starts and offers one tool, `drive_connect`, which signs the user in through the browser and connects their other agent tools; the full toolset then appears in the same session. |
 | `AGENTDRIVE_API_URL` | no | `https://app.agentdrive.sh` | Override the API endpoint (self-hosted worker). |
-| `AGENTDRIVE_AGENT_PLATFORM` | no | `unknown` | Which agent runtime is calling — drives cross-agent provenance. One of `claude-code`, `codex`, `opencode`, `gemini-cli`, `cursor`, `langgraph`, `crewai`, `autogen`, `hermes`, `openclaw`, `unknown`. |
+| `AGENTDRIVE_AGENT_PLATFORM` | no | `unknown` | Which agent runtime is calling — drives cross-agent provenance. One of `claude-code`, `codex`, `opencode`, `gemini-cli`, `cursor`, `antigravity`, `langgraph`, `crewai`, `autogen`, `hermes`, `openclaw`, `unknown`. |
 | `AGENTDRIVE_AGENT_ROLE` | no | — | Free-text role label (e.g. `planner`, `reviewer`) to distinguish multiple agents on the same platform. |
 
 ## Tools
@@ -92,7 +92,7 @@ curl -fsSL agentdrive.sh/install | sh
 | `drive_context` | memory | Auto-pull the most relevant prior artifacts for the task you're starting. |
 | `drive_search` | memory | Semantic search across your org's artifacts. |
 | `drive_recall` | memory | Recall persistent facts/preferences agents have written. |
-| `drive_sessions` | sessions | List recent agent sessions for this project across Claude Code, Codex, OpenCode, Gemini CLI, and Cursor. |
+| `drive_sessions` | sessions | List recent agent sessions for this project across Claude Code, Codex, OpenCode, Gemini CLI, Antigravity, and Cursor. |
 | `drive_resume` | sessions | Load a compact handoff (goal, files touched, recent turns) from a prior session, by default the latest from a different harness. |
 | `drive_write` | files | Write a markdown file (auto-versioned). |
 | `drive_read` | files | Read a file's content. |

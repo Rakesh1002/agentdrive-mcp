@@ -5,7 +5,7 @@ import { sessionActivityAt } from '../session.js';
 
 export const driveSessionsSchema = {
   project: z.string().regex(/^[a-z0-9._-]{1,200}$/).optional().describe('Project key; defaults to the project of the current working directory'),
-  platform: z.string().optional().describe('Only sessions from this harness (claude-code, codex, opencode, gemini-cli, cursor)'),
+  platform: z.string().optional().describe('Only sessions from this harness (claude-code, codex, opencode, gemini-cli, cursor, antigravity)'),
   limit: z.number().int().positive().max(50).optional().describe('Max sessions to return (default 10, max 50)'),
 };
 

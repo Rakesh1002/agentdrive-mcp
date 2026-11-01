@@ -1,6 +1,6 @@
 ---
 name: agentdrive
-description: Cross-agent session memory and artifact workspace. Use when the user wants to continue work another agent session started (Claude Code, Codex, OpenCode, Gemini CLI, Cursor), asks what an earlier session did, needs prior context for a task, or wants to save an artifact for their other agents.
+description: Cross-agent session memory and artifact workspace. Use when the user wants to continue work another agent session started (Claude Code, Codex, OpenCode, Gemini CLI, Cursor, Antigravity), asks what an earlier session did, needs prior context for a task, or wants to save an artifact for their other agents.
 ---
 
 # AgentDrive

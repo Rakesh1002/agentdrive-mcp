@@ -1,4 +1,4 @@
-export type SessionHarness = 'claude-code' | 'codex' | 'opencode' | 'gemini-cli' | 'cursor';
+export type SessionHarness = 'claude-code' | 'codex' | 'opencode' | 'gemini-cli' | 'cursor' | 'antigravity';
 
 export interface SessionTool {
   name: string;

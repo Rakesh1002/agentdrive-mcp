@@ -12,6 +12,7 @@ const AGENT_PLATFORMS = [
   'openclaw',
   'opencode',
   'gemini-cli',
+  'antigravity',
   'unknown',
 ] as const;
 
