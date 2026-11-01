@@ -52,6 +52,10 @@ export function normalizeRemote(url: string): string | null {
   return [slug(host), ...segments].join('__');
 }
 
+// Bump whenever projectKeyFor can return a different key for the same cwd, so
+// clients re-file sessions they already synced under the old key.
+export const PROJECT_KEY_VERSION = 2;
+
 export function projectKeyFor(cwd: string): string {
   const remote = git(cwd, ['config', '--get', 'remote.origin.url']);
   const normalized = remote ? normalizeRemote(remote) : null;
@@ -59,6 +63,10 @@ export function projectKeyFor(cwd: string): string {
 
   const toplevel = git(cwd, ['rev-parse', '--show-toplevel']);
   if (toplevel) return `${slug(basename(toplevel)).slice(0, 150)}-${sha8(toplevel)}`;
+
+  // Claude Code deletes a worktree once its work lands; its sessions still belong to the parent repo.
+  const parent = /^(.+?)\/\.claude\/worktrees\/[^/]+/.exec(cwd)?.[1];
+  if (parent) return projectKeyFor(parent);
 
   return `local__${slug(basename(cwd)).slice(0, 150)}-${sha8(cwd)}`;
 }

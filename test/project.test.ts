@@ -46,6 +46,15 @@ describe('projectKeyFor', () => {
     expect(projectKeyFor(join(repo, 'sub'))).toBe(projectKeyFor(repo));
   });
 
+  it('files a deleted Claude Code worktree under its parent repo', () => {
+    const repo = join(root, 'wt-parent');
+    mkdirSync(repo);
+    git(repo, 'init', '-q');
+    git(repo, 'remote', 'add', 'origin', 'git@github.com:Owner/Parent.git');
+    expect(projectKeyFor(join(repo, '.claude', 'worktrees', 'gone-1a2b3c'))).toBe('github.com__owner__parent');
+    expect(projectKeyFor(join(repo, '.claude', 'worktrees', 'gone-1a2b3c', 'sub'))).toBe('github.com__owner__parent');
+  });
+
   it('uses a local key outside any git repo and never throws', () => {
     const plain = join(root, 'plain');
     mkdirSync(plain);
